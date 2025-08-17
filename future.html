@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温暖的相遇 -暖心的故事</title>
+    <style>
+        /* 全局样式变量 */
+        :root {
+            --primary-color: #FF6B8B;
+            --primary-light: #FF85A1;
+            --primary-lighter: #FFB7C5;
+            --secondary-color: #B5D8FE;
+            --secondary-light: #D1E3FF;
+            --accent-color: #FFF7AE;
+            --accent-light: #F9F0B4;
+            --tertiary-color: #B6E3B9;
+            --tertiary-light: #D7F1D9;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-title {
+                font-size: 1.8rem;
+                color: var(--primary-color);
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                margin: 0;
+            }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background-color: var(--primary-lighter);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: var(--primary-lighter);
+        }
+
+        /* 页面头部 */
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--tertiary-color));
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--dark-gray);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 背景装饰 */
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .header-deco {
+            position: absolute;
+            background-color: var(--white);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        /* 主容器 */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        /* 时间轴容器 - 共同经历 */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        /* 时间轴中心线 */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            background: linear-gradient(to bottom, var(--secondary-color), var(--tertiary-color));
+            border-radius: 2px;
+        }
+
+        /* 时间点 */
+        .timeline-item {
+            margin-bottom: 3rem;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        /* 奇数时间点在左侧 */
+        .timeline-item:nth-child(odd) {
+            padding-right: calc(50% + 30px);
+            text-align: right;
+        }
+
+        /* 偶数时间点在右侧 */
+        .timeline-item:nth-child(even) {
+            padding-left: calc(50% + 30px);
+        }
+
+        /* 显示动画 */
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 时间点图标 */
+        .timeline-icon {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark-gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 4px solid var(--secondary-color);
+        }
+
+        .timeline-icon:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background-color: var(--secondary-light);
+        }
+
+        .timeline-icon.active {
+            background-color: var(--tertiary-color);
+            border-color: var(--tertiary-light);
+            color: var(--white);
+        }
+
+        /* 时间点内容 */
+        .timeline-content {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            max-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .timeline-content.expanded {
+            max-height: 500px;
+            background-color: var(--white);
+        }
+
+        /* 内容标题 */
+        .timeline-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        /* 内容描述 */
+        .timeline-description {
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease 0.2s;
+        }
+
+        .timeline-content.expanded .timeline-description {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 内容日期 */
+        .timeline-date {
+            font-size: 0.9rem;
+            color: var(--tertiary-color);
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+        /* 照片容器 */
+        .timeline-photos {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease 0.3s;
+            flex-wrap: wrap;
+        }
+
+        .timeline-content.expanded .timeline-photos {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .timeline-photo:hover {
+            transform: scale(1.05);
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--dark-gray);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-title {
+                font-size: 1.5rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                padding-left: 80px;
+                padding-right: 0;
+                text-align: left;
+            }
+
+            .timeline-icon {
+                left: 30px;
+            }
+
+            .timeline-content {
+                max-height: 80px;
+            }
+
+            .timeline-title {
+                font-size: 1.2rem;
+            }
+
+            .timeline-description {
+                font-size: 0.9rem;
+            }
+
+            .timeline-photo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <h1 class="nav-title">Sweet Moments</h1>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="memories.html" class="nav-link">Memory Wall</a></li>
+            <li><a href="love_letter.html" class="nav-link">Love Letter</a></li>
+            <li><a href="game.html" class="nav-link">Mini Game</a></li>
+            <li><a href="future.html" class="nav-link active">Heartwarming Story</a></li>
+        </ul>
+    </nav>
+
+    <!-- 页面头部 -->
+    <header>
+        <div class="header-bg"></div>
+        <h1>Every Step We've Taken</h1>
+        <p>Every moment is worth cherishing</p>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 时间轴 - 共同经历 -->
+        <div class="timeline">
+            <!-- Timeline Item 1 -->
+            <div class="timeline-item" data-year="First Meeting">
+                <div class="timeline-icon">👋</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">First Meeting</h3>
+                <p class="timeline-description">The sun was shining brightly that day, and I saw a figure reading carefully. The sunlight shone through the window onto your hair, and at that moment, the world felt warm.</p>
+                    <div class="timeline-photos">
+                        <img src="image/1.jpg" alt="First meeting scene" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Spring 2025</div>
+                </div>
+            </div>
+
+            <!-- Timeline Item 2 -->
+            <div class="timeline-item" data-year="First Date">
+                <div class="timeline-icon">💕</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">Movie Time</h3>
+                <p class="timeline-description">Although the movie was wonderful, what I cared more about was the feeling of sitting beside you. After the movie, we had ice cream, and I couldn't help but smile when I saw the ice cream on the corner of your mouth.</p>
+                    <div class="timeline-photos">
+                        <img src="image/4.jpg" alt="First date" class="timeline-photo">
+                        <img src="image/6.jpg" alt="Ice cream" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Summer 2025</div>
+                </div>
+            </div>
+
+            <!-- Timeline Item 3 -->
+            <div class="timeline-item" data-year="First Hand Holding">
+                <div class="timeline-icon">👫</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">River Walk</h3>
+                <p class="timeline-description">Walking by the river at night, the breeze blowing, you said it was a bit cold. I hesitated for a moment, then gently held your hand. My heart was racing, but I felt especially at ease.</p>
+                    <div class="timeline-photos">
+                        <img src="image/7 (1).jpg" alt="River walk" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Autumn 2025</div>
+                </div>
+            </div>
+
+            <!-- Timeline Item 4 -->
+            <div class="timeline-item" data-year="Birthday Surprise">
+                <div class="timeline-icon">🎂</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">Special Day</h3>
+                <p class="timeline-description">I prepared for a long time in advance to give you a little surprise. Seeing your eyes light up when you opened the door and hearing your happy laughter made all my efforts worth it.</p>
+                    <div class="timeline-photos">
+                        <img src="image/7 (2).jpg" alt="Birthday cake" class="timeline-photo">
+                        <img src="image/7 (4).jpg" alt="Gift" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Winter 2025</div>
+                </div>
+            </div>
+
+            <!-- Timeline Item 5 -->
+            <div class="timeline-item" data-year="Travel Together">
+                <div class="timeline-icon">🏖️</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">Summer Beach</h3>
+                <p class="timeline-description">Going to the beach, leaving side-by-side footprints in the sand during the day, sitting by the sea at night listening to the waves and counting stars. With you by my side, even the sea breeze smells sweet.</p>
+                    <div class="timeline-photos">
+                        <img src="image/7 (6).jpg" alt="Beach scenery" class="timeline-photo">
+                        <img src="image/7 (8).jpg" alt="Beach footprints" class="timeline-photo">
+                        <img src="image/7 (10).jpg" alt="Sunset" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Spring 2023</div>
+                </div>
+            </div>
+
+            <!-- Timeline Item 6 -->
+            <div class="timeline-item" data-year="Beautiful Future">
+                <div class="timeline-icon">✨</div>
+                <div class="timeline-content">
+                    <h3 class="timeline-title">Future Expectations</h3>
+                <p class="timeline-description">I believe there are more beautiful things in the future. Looking forward to experiencing more firsts with you, sharing small happiness in life together, and seeing more scenery together.</p>
+                    <div class="timeline-photos">
+                        <img src="image/7 (11).jpg" alt="Future expectations" class="timeline-photo">
+                        <img src="image/7 (12).jpg" alt="Future hopes" class="timeline-photo">
+                    </div>
+                    <div class="timeline-date">Every day in the future</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>Thankful for meeting you in life 💖 Cherish every warm moment</p>
+    </footer>
+
+    <script>
+        // 创建头部背景的装饰元素
+        function createHeaderDecorations() {
+            const headerBg = document.querySelector('.header-bg');
+            const decoCount = 20;
+
+            for (let i = 0; i < decoCount; i++) {
+                const deco = document.createElement('div');
+                deco.classList.add('header-deco');
+                
+                // 随机属性
+                const size = Math.random() * 40 + 10;
+                const leftPos = Math.random() * 100;
+                const topPos = Math.random() * 100;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                deco.style.width = `${size}px`;
+                deco.style.height = `${size}px`;
+                deco.style.left = `${leftPos}%`;
+                deco.style.top = `${topPos}%`;
+                deco.style.opacity = opacity;
+                
+                headerBg.appendChild(deco);
+            }
+        }
+
+        // 检测元素是否在视口中
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                rect.bottom >= 0
+            );
+        }
+
+        // 显示视口中的时间点
+        function showTimelineItems() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                if (isInViewport(item) && !item.classList.contains('visible')) {
+                    item.classList.add('visible');
+                }
+            });
+        }
+
+        // 初始化时间点点击事件
+        function initTimelineInteractions() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            
+            timelineItems.forEach(item => {
+                const icon = item.querySelector('.timeline-icon');
+                const content = item.querySelector('.timeline-content');
+                const title = item.querySelector('.timeline-title');
+                
+                // 点击图标展开/收起内容
+                icon.addEventListener('click', () => {
+                    // 切换展开状态
+                    content.classList.toggle('expanded');
+                    icon.classList.toggle('active');
+                    
+                    // 添加展开/收起动画
+                    if (content.classList.contains('expanded')) {
+                        // 展开时的动画
+                        icon.style.backgroundColor = 'var(--tertiary-color)';
+                        icon.style.borderColor = 'var(--tertiary-light)';
+                        icon.style.color = 'var(--white)';
+                        title.style.color = 'var(--tertiary-color)';
+                    } else {
+                        // 收起时的动画
+                        icon.style.backgroundColor = 'var(--white)';
+                        icon.style.borderColor = 'var(--secondary-color)';
+                        icon.style.color = 'var(--dark-gray)';
+                        title.style.color = 'var(--secondary-color)';
+                    }
+                });
+            });
+        }
+
+        // 照片点击放大效果
+        function initPhotoInteractions() {
+            const photos = document.querySelectorAll('.timeline-photo');
+            
+            photos.forEach(photo => {
+                photo.addEventListener('click', () => {
+                    // 创建放大的照片元素
+                    const fullscreenPhoto = document.createElement('div');
+                    fullscreenPhoto.style.position = 'fixed';
+                    fullscreenPhoto.style.top = '0';
+                    fullscreenPhoto.style.left = '0';
+                    fullscreenPhoto.style.width = '100vw';
+                    fullscreenPhoto.style.height = '100vh';
+                    fullscreenPhoto.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    fullscreenPhoto.style.display = 'flex';
+                    fullscreenPhoto.style.justifyContent = 'center';
+                    fullscreenPhoto.style.alignItems = 'center';
+                    fullscreenPhoto.style.zIndex = '1000';
+                    fullscreenPhoto.style.cursor = 'pointer';
+                    fullscreenPhoto.style.transition = 'opacity 0.3s ease';
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.src;
+                    img.style.maxWidth = '90%';
+                    img.style.maxHeight = '90%';
+                    img.style.borderRadius = '8px';
+                    img.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.3)';
+                    
+                    fullscreenPhoto.appendChild(img);
+                    document.body.appendChild(fullscreenPhoto);
+                    
+                    // 点击关闭放大的照片
+                    fullscreenPhoto.addEventListener('click', () => {
+                        document.body.removeChild(fullscreenPhoto);
+                    });
+                });
+            });
+        }
+
+        // 导航链接的交互效果
+        function initNavInteractions() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseover', () => {
+                    // 随机选择一个次要颜色作为悬停效果
+                    const hoverColors = [
+                        'var(--primary-lighter)',
+                        'var(--secondary-light)',
+                        'var(--accent-light)',
+                        'var(--tertiary-light)'
+                    ];
+                    const randomColor = hoverColors[Math.floor(Math.random() * hoverColors.length)];
+                    link.style.backgroundColor = randomColor;
+                });
+                
+                link.addEventListener('mouseout', () => {
+                    // 如果不是当前活动链接，则恢复默认背景
+                    if (!link.classList.contains('active')) {
+                        link.style.backgroundColor = 'transparent';
+                    }
+                });
+            });
+        }
+
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            createHeaderDecorations();
+            initTimelineInteractions();
+            initPhotoInteractions();
+            initNavInteractions();
+            
+            // 初始检测视口中的元素
+            setTimeout(showTimelineItems, 100);
+            
+            // 滚动时检测视口中的元素
+            window.addEventListener('scroll', showTimelineItems);
+        });
+    </script>
+</body>
+</html>

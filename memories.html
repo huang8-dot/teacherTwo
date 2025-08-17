@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warm Moments - Walking With You</title>
+    <style>
+        /* 全局样式变量 */
+        :root {
+            --primary-color: #FF6B8B;
+            --primary-light: #FF85A1;
+            --primary-lighter: #FFB7C5;
+            --secondary-color: #6EC2FF;
+            --secondary-light: #9FD6FF;
+            --accent-color: #90EE90;
+            --accent-light: #B7F0B7;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+        }
+
+        .nav-logo {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+        }
+
+        /* 页面头部 */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 背景装饰 */
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .header-heart {
+            position: absolute;
+            background-color: var(--white);
+            transform: rotate(45deg);
+            opacity: 0.3;
+        }
+
+        /* 照片墙容器 */
+        .photo-wall {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* 照片卡片 - Polaroid 风格 */
+        .photo-card {
+            background-color: var(--white);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: rotate(0deg);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            padding: 1.5rem 1.5rem 2.5rem;
+            perspective: 1000px;
+        }
+
+        /* 随机旋转角度，增加错落感 */
+        .photo-card:nth-child(1) { transform: rotate(-2deg); }
+        .photo-card:nth-child(2) { transform: rotate(1deg); }
+        .photo-card:nth-child(3) { transform: rotate(2deg); }
+        .photo-card:nth-child(4) { transform: rotate(-1deg); }
+        .photo-card:nth-child(5) { transform: rotate(1.5deg); }
+        .photo-card:nth-child(6) { transform: rotate(-1.5deg); }
+
+        /* 鼠标悬停效果 */
+        .photo-card:hover {
+            transform: scale(1.03) rotate(0deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+
+        /* 照片容器 */
+        .photo-container {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            margin-bottom: 1rem;
+            border-radius: 3px;
+        }
+
+        /* 照片 */
+        .photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .photo-card:hover .photo {
+            transform: scale(1.1);
+        }
+
+        /* 照片信息 */
+        .photo-info {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0;
+            right: 0;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .photo-card:hover .photo-info {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .photo-date {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+
+        .photo-location {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        /* 照片标题 */
+        .photo-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            text-align: center;
+            color: var(--dark-gray);
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .back-button:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        /* 下一页浮动按钮 */
+        .next-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 139, 0.4);
+            z-index: 100;
+            animation: pulse 2s ease-in-out infinite;
+            display: none;
+        }
+
+        .next-button:hover {
+            background-color: var(--primary-light);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 139, 0.6);
+        }
+
+        /* 脉动动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: var(--dark-gray);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0.8rem 1rem;
+            }
+            
+            .nav-links {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.3rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .photo-wall {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .next-button {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .back-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: 0.5rem;
+                left: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">Warm Moments</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="memories.html" class="nav-link active">Memory Wall</a>
+                <a href="love_letter.html" class="nav-link">Love Letter</a>
+                <a href="game.html" class="nav-link">Love Game</a>
+                <a href="future.html" class="nav-link">Our Future</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面头部 -->
+    <header>
+        <div class="header-bg"></div>
+        <h1>Days We've Walked Together</h1>
+        <p>Every photo captures warm moments</p>
+    </header>
+
+    <!-- 照片墙 -->
+    <div class="photo-wall">
+        <!-- 照片卡片 1 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/2.jpg" alt="First Meeting" class="photo">
+            </div>
+            <h3 class="photo-title">First Meeting</h3>
+            <div class="photo-info">
+                <div class="photo-date">February 14, 2025</div>
+                <div class="photo-location">City Park</div>
+            </div>
+        </div>
+
+        <!-- 照片卡片 2 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/7 (9).jpg" alt="Summer Seabreeze" class="photo">
+            </div>
+            <h3 class="photo-title">Summer Seabreeze</h3>
+            <div class="photo-info">
+                <div class="photo-date">July 5, 2025</div>
+                <div class="photo-location">Sunny Beach</div>
+            </div>
+        </div>
+
+        <!-- 照片卡片 3 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/5.jpg" alt="Special Day" class="photo">
+            </div>
+            <h3 class="photo-title">Special Day</h3>
+            <div class="photo-info">
+                <div class="photo-date">September 10, 2025</div>
+                <div class="photo-location">At Home</div>
+            </div>
+        </div>
+
+        <!-- 照片卡片 4 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/7 (5).jpg" alt="Joyful Time" class="photo">
+            </div>
+            <h3 class="photo-title">Joyful Time</h3>
+            <div class="photo-info">
+                <div class="photo-date">January 20, 2025</div>
+                <div class="photo-location">Happy World</div>
+            </div>
+        </div>
+
+        <!-- 照片卡片 5 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/7 (3).jpg" alt="Afternoon Time" class="photo">
+            </div>
+            <h3 class="photo-title">Afternoon Time</h3>
+            <div class="photo-info">
+                <div class="photo-date">February 14, 2025</div>
+                <div class="photo-location">Romantic Cafe</div>
+            </div>
+        </div>
+
+        <!-- 照片卡片 6 -->
+        <div class="photo-card">
+            <div class="photo-container">
+                <img src="image/7 (7).jpg" alt="Viewing Scenery Together" class="photo">
+            </div>
+            <h3 class="photo-title">Viewing Scenery Together</h3>
+            <div class="photo-info">
+                <div class="photo-date">May 1, 2025</div>
+                <div class="photo-location">Green Mountain Scenic Area</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>Cherishing every step walked with you 💖</p>
+    </footer>
+
+    <script>
+        // 创建头部背景的爱心装饰
+        function createHeaderHearts() {
+            const headerBg = document.querySelector('.header-bg');
+            const heartCount = 20;
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('header-heart');
+                
+                // 随机属性
+                const size = Math.random() * 40 + 10;
+                const leftPos = Math.random() * 100;
+                const topPos = Math.random() * 100;
+                const rotation = Math.random() * 360;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                heart.style.width = `${size}px`;
+                heart.style.height = `${size}px`;
+                heart.style.left = `${leftPos}%`;
+                heart.style.top = `${topPos}%`;
+                heart.style.transform = `rotate(${rotation}deg)`;
+                heart.style.opacity = opacity;
+                
+                headerBg.appendChild(heart);
+            }
+        }
+
+        // 滚动视差效果
+        function parallaxEffect() {
+            const scrollY = window.scrollY;
+            const photoCards = document.querySelectorAll('.photo-card');
+            
+            photoCards.forEach((card, index) => {
+                const speed = 0.05 + (index % 3) * 0.02; // 不同行的卡片有不同的滚动速度
+                card.style.transform = `translateY(${scrollY * speed}px) rotate(${card.dataset.originalRotate || card.style.transform.split('rotate(')[1].split(')')[0]})`;
+            });
+        }
+
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            createHeaderHearts();
+            
+            // 保存初始旋转角度
+            document.querySelectorAll('.photo-card').forEach(card => {
+                const rotateValue = card.style.transform.split('rotate(')[1].split(')')[0];
+                card.dataset.originalRotate = rotateValue;
+            });
+            
+            // 滚动事件监听
+            window.addEventListener('scroll', parallaxEffect);
+            
+            // 导航链接添加悬停效果
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    link.style.transform = 'scale(1.05)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    link.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

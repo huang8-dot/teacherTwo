@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Mini Game - Catch the Little Stars</title>
+    <style>
+        /* Global Style Variables */
+        :root {
+            --primary-color: #FF6B8B;
+            --primary-light: #FF85A1;
+            --primary-lighter: #FFB7C5;
+            --secondary-color: #B5D8FE;
+            --accent-color: #FFF7AE;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            background: linear-gradient(135deg, var(--primary-lighter), var(--secondary-color));
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+        }
+
+        .nav-logo {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+            transform: scale(1.05);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+        }
+
+        /* 游戏信息 */
+        .game-info {
+            margin-top: 80px;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-container,
+        .time-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark-gray);
+        }
+
+        .score-value,
+        .time-value {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        /* 游戏区域 */
+        .game-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        /* 星星元素 */
+        .game-star {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            animation: fall linear forwards;
+            transition: transform 0.2s ease;
+            user-select: none;
+            z-index: 10;
+            color: var(--primary-color);
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 5px rgba(255, 107, 139, 0.7);
+        }
+
+        /* 星星点击效果 */
+        .game-star.clicked {
+            transform: scale(1.2);
+            opacity: 0;
+        }
+
+        /* 分数弹出动画 */
+        .score-popup {
+            position: absolute;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            pointer-events: none;
+            animation: scorePopup 0.8s ease-out forwards;
+            z-index: 20;
+        }
+
+        @keyframes scorePopup {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        /* 星星掉落动画 */
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(calc(50vh - 75px)) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh - 150px)) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        /* 游戏开始界面 */
+        .game-start {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .game-start.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .game-start h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .game-start p {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .start-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            padding: 1rem 2rem;
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 139, 0.4);
+        }
+
+        .start-button:hover {
+            background-color: var(--primary-light);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 107, 139, 0.6);
+        }
+
+        /* 游戏结束界面 */
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .game-over.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .game-over h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .final-score {
+            font-size: 1.5rem;
+            color: var(--dark-gray);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .final-score span {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .restart-button,
+        .share-button,
+        .next-page-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+        }
+
+        .restart-button:hover,
+        .share-button:hover,
+        .next-page-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .restart-button {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .restart-button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .share-button {
+            background-color: var(--secondary-color);
+            color: var(--dark-gray);
+        }
+
+        .share-button:hover {
+            background-color: #97c6f8;
+        }
+
+        .next-page-button {
+            background-color: var(--accent-color);
+            color: var(--dark-gray);
+        }
+
+        .next-page-button:hover {
+            background-color: #ffe36e;
+        }
+
+        /* 游戏帮助 */
+        .game-help {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--dark-gray);
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease 1s;
+            z-index: 50;
+        }
+
+        .game-help.visible {
+            opacity: 1;
+        }
+
+        /* 难度选择 */
+        .difficulty-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-color);
+            background-color: var(--white);
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .difficulty-btn:hover,
+        .difficulty-btn.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                padding: 0.8rem 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .game-info {
+                gap: 1rem;
+                font-size: 1rem;
+            }
+
+            .score-value,
+            .time-value {
+                font-size: 1.2rem;
+                min-width: 40px;
+            }
+
+            .game-heart {
+                width: 40px;
+                height: 40px;
+            }
+
+            .game-heart:before,
+            .game-heart:after {
+                width: 40px;
+                height: 40px;
+            }
+
+            .game-heart:before {
+                top: -20px;
+            }
+
+            .game-heart:after {
+                left: -20px;
+            }
+
+            .game-start h2,
+            .game-over h2 {
+                font-size: 2rem;
+            }
+
+            .game-start p {
+                font-size: 1rem;
+            }
+
+            .game-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .difficulty-selector {
+                gap: 0.5rem;
+            }
+
+            .difficulty-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .game-help {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">Happy Mini Game</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="memories.html" class="nav-link">Memory Wall</a>
+                <a href="love_letter.html" class="nav-link">Love Letter</a>
+                <a href="game.html" class="nav-link active">Mini Game</a>
+                <a href="future.html" class="nav-link">Heartwarming Story</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Game Info -->
+    <div class="game-info">
+        <div class="score-container">
+            Score: <span class="score-value" id="scoreValue">0</span>
+        </div>
+        <div class="time-container">
+            Time: <span class="time-value" id="timeValue">30</span>s
+        </div>
+    </div>
+
+    <!-- 游戏区域 -->
+    <div class="game-area" id="gameArea">
+        <!-- 游戏开始界面 -->
+        <div class="game-start" id="gameStart">
+            <h2>Catch the Little Stars!</h2>
+                <p>Click on the falling stars to collect happiness! Try to catch as many as you can within the time limit and see how many little joys you can gather!</p>
+            
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+                <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+            </div>
+            
+            <button class="start-button" id="startButton">Start Game</button>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div class="game-over" id="gameOver">
+            <h2>Game Over!</h2>
+                <div class="final-score">
+                    You collected <span id="finalScore">0</span> little stars!
+                </div>
+            <div class="game-buttons">
+                <button class="restart-button" id="restartButton">Play Again</button>
+                <button class="share-button" id="shareButton">Share Score</button>
+                <button class="next-page-button" id="nextPageButton">Next Page</button>
+            </div>
+        </div>
+
+        <!-- 游戏帮助 -->
+        <div class="game-help" id="gameHelp">
+            ⭐ Click on the falling stars to collect little joys! ⭐
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态变量
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let spawnInterval;
+        let isGameRunning = false;
+        let difficulty = 'easy'; // 默认难度
+        let starSpeed = 3000; // 默认速度（毫秒）
+        let starSize = 50; // 默认大小
+        let stars = [];
+
+        // DOM元素
+        const scoreValue = document.getElementById('scoreValue');
+        const timeValue = document.getElementById('timeValue');
+        const gameArea = document.getElementById('gameArea');
+        const gameStart = document.getElementById('gameStart');
+        const gameOver = document.getElementById('gameOver');
+        const gameHelp = document.getElementById('gameHelp');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const shareButton = document.getElementById('shareButton');
+        const nextPageButton = document.getElementById('nextPageButton');
+        const backButton = document.getElementById('backButton');
+        const finalScore = document.getElementById('finalScore');
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+        // 设置难度
+        difficultyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有按钮的激活状态
+                difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                // 设置当前按钮为激活状态
+                button.classList.add('active');
+                // 更新难度
+                difficulty = button.dataset.difficulty;
+                
+                // 根据难度设置游戏参数
+            switch(difficulty) {
+                case 'easy':
+                    starSpeed = 3000;
+                    starSize = 50;
+                    break;
+                case 'medium':
+                    starSpeed = 2000;
+                    starSize = 40;
+                    break;
+                case 'hard':
+                    starSpeed = 1200;
+                    starSize = 30;
+                    break;
+            }
+            });
+        });
+
+        // 创建星星
+        function createStar() {
+            if (!isGameRunning) return;
+            
+            const star = document.createElement('div');
+            star.classList.add('game-star');
+            
+            // 随机星星符号
+            const starSymbols = ['⭐', '✨', '🌟'];
+            const randomSymbol = starSymbols[Math.floor(Math.random() * starSymbols.length)];
+            star.textContent = randomSymbol;
+            
+            // 随机位置
+            const leftPos = Math.random() * (gameArea.offsetWidth - starSize);
+            
+            // 设置样式
+            star.style.left = `${leftPos}px`;
+            star.style.fontSize = `${starSize * 0.8}px`;
+            star.style.animationDuration = `${starSpeed / 1000}s`;
+            
+            // 随机颜色
+            const hue = Math.random() * 60 + 40; // 黄色到金色的范围
+            const lightness = Math.random() * 15 + 70; // 亮度
+            star.style.color = `hsl(${hue}, 100%, ${lightness}%)`;
+            star.style.textShadow = `0 0 5px hsl(${hue}, 100%, ${lightness - 10}%)`;
+            
+            // 点击事件
+            star.addEventListener('click', () => {
+                if (!isGameRunning) return;
+                
+                // 添加点击效果
+                star.classList.add('clicked');
+                
+                // 增加分数
+                score++;
+                scoreValue.textContent = score;
+                
+                // 创建分数弹出动画
+                createScorePopup(star.offsetLeft + starSize / 2, star.offsetTop);
+                
+                // 移除星星
+                setTimeout(() => {
+                    if (star.parentNode) {
+                        star.parentNode.removeChild(star);
+                    }
+                    // 从数组中移除
+                    stars = stars.filter(s => s !== star);
+                }, 200);
+            });
+            
+            // 添加到游戏区域
+            gameArea.appendChild(star);
+            stars.push(star);
+            
+            // 动画结束后移除
+            setTimeout(() => {
+                if (star.parentNode) {
+                    star.parentNode.removeChild(star);
+                }
+                // 从数组中移除
+                stars = stars.filter(s => s !== star);
+            }, starSpeed);
+        }
+
+        // 创建分数弹出动画
+        function createScorePopup(x, y) {
+            const popup = document.createElement('div');
+            popup.classList.add('score-popup');
+            popup.textContent = '+1';
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            
+            // 调整位置使其居中
+            popup.style.transform = 'translate(-50%, -50%)';
+            
+            gameArea.appendChild(popup);
+            
+            // 动画结束后移除
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            }, 800);
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 重置游戏状态
+            score = 0;
+            timeLeft = 30;
+            scoreValue.textContent = score;
+            timeValue.textContent = timeLeft;
+            isGameRunning = true;
+            
+            // 清空游戏区域
+            stars.forEach(star => {
+                if (star.parentNode) {
+                    star.parentNode.removeChild(star);
+                }
+            });
+            stars = [];
+            
+            // 隐藏开始界面，显示帮助
+            gameStart.classList.add('hidden');
+            gameHelp.classList.add('visible');
+            gameOver.classList.remove('visible');
+            
+            // 开始生成星星
+            createStar(); // 立即生成一个
+            spawnInterval = setInterval(() => {
+                const spawnRate = {
+                    'easy': 1000,
+                    'medium': 700,
+                    'hard': 500
+                };
+                
+                // 根据剩余时间增加生成速度
+                let rate = spawnRate[difficulty];
+                if (timeLeft < 10) {
+                    rate *= 0.7;
+                }
+                
+                clearInterval(spawnInterval);
+                spawnInterval = setInterval(createStar, rate);
+            }, 1000);
+            
+            // 开始倒计时
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timeValue.textContent = timeLeft;
+                
+                // 游戏结束条件
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // 结束游戏
+        function endGame() {
+            isGameRunning = false;
+            
+            // 清除定时器
+            clearInterval(gameInterval);
+            clearInterval(spawnInterval);
+            
+            // 隐藏帮助
+            gameHelp.classList.remove('visible');
+            
+            // 显示游戏结束界面
+            setTimeout(() => {
+                finalScore.textContent = score;
+                gameOver.classList.add('visible');
+            }, 500);
+        }
+
+        // 导航链接添加悬停效果
+        function setupNavLinks() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    link.style.transform = 'scale(1.05)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    link.style.transform = 'scale(1)';
+                });
+            });
+        }
+
+        // 初始化事件监听
+        window.addEventListener('DOMContentLoaded', () => {
+            setupNavLinks();
+            
+            // 开始按钮
+            startButton.addEventListener('click', startGame);
+            
+            // 重新开始按钮
+            restartButton.addEventListener('click', startGame);
+            
+            // 分享按钮
+            shareButton.addEventListener('click', () => {
+                alert(`I collected ${score} little stars in the Happy Mini Game! Come and challenge me!`);
+            });
+            
+            // 下一页按钮
+            nextPageButton.addEventListener('click', () => {
+                window.location.href = 'future.html';
+            });
+            
+            // 返回按钮 - 保留以防导航栏不可用
+            if(document.getElementById('backButton')) {
+                document.getElementById('backButton').addEventListener('click', () => {
+                    window.location.href = 'love_letter.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

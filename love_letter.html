@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小小心意 - 有话想说</title>
+    <style>
+        /* 全局样式变量 */
+        :root {
+            --primary-color: #FF6B8B;
+            --primary-light: #FF85A1;
+            --primary-lighter: #FFB7C5;
+            --secondary-color: #6EC2FF;
+            --secondary-light: #9FD6FF;
+            --accent-color: #90EE90;
+            --accent-light: #B7F0B7;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            background: linear-gradient(135deg, var(--light-gray), var(--primary-lighter));
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+        }
+
+        .nav-logo {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(255, 107, 139, 0.1);
+        }
+
+        /* 页面头部 */
+        header {
+            position: absolute;
+            top: 6rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 浮动动画 */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* 返回按钮 - 隐藏，使用导航栏代替 */
+        .back-button {
+            display: none;
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 礼盒容器 */
+        .gift-box-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            cursor: pointer;
+            perspective: 1000px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 礼盒 - 禁用状态 */
+        .gift-box-container.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* 礼盒 */
+        .gift-box {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        /* 礼盒打开状态 */
+        .gift-box.open {
+            transform: translateY(50px);
+        }
+
+        /* 礼盒底部 - 使用蓝色系 */
+        .gift-bottom {
+            position: absolute;
+            bottom: 0;
+            width: 300px;
+            height: 240px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: all 0.5s ease;
+            z-index: 1;
+        }
+
+        /* 礼盒底部图案 */
+        .gift-bottom::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background-color: var(--secondary-light);
+            top: 40px;
+            left: 0;
+        }
+
+        .gift-bottom::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            background-color: var(--secondary-light);
+            top: 0;
+            left: 40px;
+        }
+
+        /* 礼盒盖子 - 使用粉色系 */
+        .gift-lid {
+            position: absolute;
+            top: 0;
+            width: 300px;
+            height: 80px;
+            background-color: var(--primary-light);
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center top;
+        }
+
+        /* 礼盒盖子丝带 - 使用绿色系 */
+        .gift-lid::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 15px;
+            background-color: var(--accent-color);
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .gift-lid::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 100%;
+            background-color: var(--accent-color);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 礼盒丝带 - 使用绿色系 */
+        .gift-ribbon {
+            position: absolute;
+            width: 15px;
+            height: 240px;
+            background-color: var(--accent-color);
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            transition: all 0.6s ease;
+        }
+
+        .gift-ribbon-cross {
+            position: absolute;
+            width: 100%;
+            height: 15px;
+            background-color: var(--accent-color);
+            top: 80px;
+            left: 0;
+            z-index: 2;
+            transition: all 0.6s ease;
+        }
+
+        /* 炸开动画 */
+        .gift-box.explode .gift-lid {
+            animation: explodeLid 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .gift-box.explode .gift-bottom {
+            animation: explodeBottom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .gift-box.explode .gift-ribbon {
+            animation: explodeRibbon 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .gift-box.explode .gift-ribbon-cross {
+            animation: explodeRibbonCross 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* 关闭动画 - 新增 */
+        .gift-box.close .gift-lid,
+        .gift-box.close .gift-bottom,
+        .gift-box.close .gift-ribbon,
+        .gift-box.close .gift-ribbon-cross {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+
+        /* 爆炸粒子 */
+        .explosion-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes explodeLid {
+            0% { transform: rotateX(0); opacity: 1; }
+            50% { transform: rotateX(-120deg) translateY(-50px); opacity: 1; }
+            100% { transform: rotateX(-120deg) translateY(-150px); opacity: 0; }
+        }
+
+        @keyframes explodeBottom {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes explodeRibbon {
+            0% { transform: translateX(-50%); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-150px) rotate(180deg); opacity: 0; }
+        }
+
+        @keyframes explodeRibbonCross {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-150px) rotate(90deg); opacity: 0; }
+        }
+
+        /* 礼盒中的信件 */
+        .love-letter {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            width: 220px;
+            height: 160px;
+            background-color: transparent;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* 信件显示动画 */
+        .gift-box.open .love-letter {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 告白文字 */
+        .love-message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 1s;
+        }
+
+        /* 告白文字出现动画 */
+        .gift-box.open .love-message {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 告白文字分段动画 */
+        .message-line {
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+        }
+        
+        /* 回忆照片样式 */
+        .memory-photo {
+            margin-top: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .memory-image {
+            width: 200px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: scale(0.5) rotate(-20deg);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 100%;
+        }
+
+        /* 按钮容器 - 隐藏，使用导航栏代替 */
+        .buttons-container {
+            display: none;
+        }
+
+        /* 飘落的爱心效果 */
+        .falling-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-color);
+            transform: rotate(45deg);
+            opacity: 0;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+
+        /* 修复白色占位框问题 */
+        .love-letter, .memory-photo, .memory-image {
+            background-color: transparent !important;
+            background: transparent !important;
+        }
+
+        .falling-heart:before,
+        .falling-heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .falling-heart:before {
+            top: -10px;
+            left: 0;
+        }
+
+        .falling-heart:after {
+            top: 0;
+            left: -10px;
+        }
+
+        /* 爱心飘落动画 */
+        @keyframes fall {
+            0% {
+                top: -10%;
+                left: calc(var(--left) * 1%);
+                transform: rotate(45deg) translateX(0);
+                opacity: var(--opacity);
+            }
+            100% {
+                top: 110%;
+                left: calc(var(--left) * 1% + var(--drift) * 1px);
+                transform: rotate(45deg) translateX(0) rotateZ(var(--rotation)deg);
+                opacity: 0;
+            }
+        }
+
+        /* 页脚 */
+        footer {
+            position: absolute;
+            bottom: 1rem;
+            text-align: center;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0.8rem 1rem;
+            }
+            
+            .nav-links {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.3rem;
+            }
+
+            header {
+                top: 5rem;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .gift-box-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .gift-bottom {
+                width: 200px;
+                height: 160px;
+            }
+
+            .gift-lid {
+                width: 200px;
+                height: 60px;
+            }
+
+            .gift-ribbon {
+                height: 160px;
+                top: 60px;
+            }
+
+            .gift-ribbon-cross {
+                top: 60px;
+            }
+
+            .love-letter {
+                width: 160px;
+                height: 120px;
+                padding: 15px;
+            }
+
+            .love-message {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">Sweet Moments</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="memories.html" class="nav-link">Memory Wall</a>
+            <a href="love_letter.html" class="nav-link active">Love Letter</a>
+            <a href="game.html" class="nav-link">Mini Game</a>
+            <a href="future.html" class="nav-link">Heartwarming Story</a>
+        </div>
+        </div>
+    </nav>
+
+    <!-- 返回按钮（已隐藏，使用导航栏） -->
+    <button class="back-button" id="backButton">←</button>
+
+    <!-- 页面头部 -->
+    <header>
+        <h1>Love Confession</h1>
+        <p>To my dearest one</p>
+    </header>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 礼盒容器 -->
+        <div class="gift-box-container" id="giftBoxContainer">
+            <div class="gift-box" id="giftBox">
+                <!-- 礼盒底部 -->
+                <div class="gift-bottom"></div>
+                
+                <!-- 礼盒丝带 -->
+                <div class="gift-ribbon-cross"></div>
+                <div class="gift-ribbon"></div>
+                
+                <!-- 礼盒盖子 -->
+                <div class="gift-lid"></div>
+                
+                <!-- 爱的信件 -->
+                <div class="love-letter">
+                    <div class="love-message">
+                        <div class="message-line">The day I met you, the wind was gentle.</div>
+            <div class="message-line">Your smile is the warmest light I've ever seen.</div>
+            <div class="message-line">The time with you is as sweet as sugar.</div>
+            <div class="message-line">Every time I think of you, my heart feels like it's holding a little sun.</div>
+            <div class="message-line">I hope time slows down, giving us more moments like these.</div>
+            <div class="message-line">The road ahead is long, but having you by my side brings peace.</div>
+                    </div>
+                    
+                    <!-- 回忆照片 -->
+                    <div class="memory-photo">
+                        <img id="memoryImage" src="" alt="美好回忆" class="memory-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 按钮容器（已隐藏，使用导航栏代替） -->
+        <div class="buttons-container">
+            <button class="nav-button game-button" id="gameButton">爱情小游戏</button>
+            <button class="nav-button future-button" id="futureButton">我们的未来</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <p>✨ 愿这份心意，温暖你的每一天 ✨</p>
+    </footer>
+
+    <script>
+        // 创建飘落的爱心
+        function createFallingHearts() {
+            const body = document.body;
+            const heartCount = 30;
+
+            for (let i = 0; i < heartCount; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.classList.add('falling-heart');
+                    
+                    // 随机属性
+                    const left = Math.random() * 100;
+                    const size = Math.random() * 15 + 5;
+                    const duration = Math.random() * 8 + 10;
+                    const delay = Math.random() * 5;
+                    const opacity = Math.random() * 0.5 + 0.2;
+                    const drift = Math.random() * 100 - 50;
+                    const rotation = Math.random() * 360;
+                    
+                    // 设置CSS变量
+                    heart.style.setProperty('--left', left);
+                    heart.style.setProperty('--opacity', opacity);
+                    heart.style.setProperty('--drift', drift);
+                    heart.style.setProperty('--rotation', rotation);
+                    
+                    // 设置样式
+                    heart.style.width = `${size}px`;
+                    heart.style.height = `${size}px`;
+                    heart.style.animationDuration = `${duration}s`;
+                    heart.style.animationDelay = `${delay}s`;
+                    
+                    // 随机颜色 - 使用粉色、蓝色、绿色
+                    const colors = [
+                        `hsl(${Math.random() * 30 + 340}, 100%, 85%)`, // 粉色系
+                        `hsl(${Math.random() * 30 + 190}, 100%, 70%)`, // 蓝色系
+                        `hsl(${Math.random() * 30 + 120}, 100%, 75%)`  // 绿色系
+                    ];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    heart.style.backgroundColor = randomColor;
+                    heart.style.filter = 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.3))';
+                    
+                    // 设置伪元素颜色
+                    heart.innerHTML = `
+                        <style>
+                            .falling-heart:before,
+                            .falling-heart:after {
+                                background-color: ${randomColor};
+                            }
+                        </style>
+                    `;
+                    
+                    body.appendChild(heart);
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        heart.remove();
+                    }, (duration + delay) * 1000);
+                }, i * 200);
+            }
+        }
+
+        // 导航链接添加悬停效果
+        function setupNavLinks() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    link.style.transform = 'scale(1.05)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    link.style.transform = 'scale(1)';
+                });
+            });
+        }
+
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            createFallingHearts();
+            setupNavLinks();
+            
+            // 每15秒创建一批新的爱心
+            setInterval(createFallingHearts, 10000);
+            
+            // 图片数组，包含所有可用的图片
+            const images = [
+                '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg',
+                '7 (1).jpg', '7 (2).jpg', '7 (3).jpg', '7 (4).jpg', '7 (5).jpg',
+                '7 (6).jpg', '7 (7).jpg', '7 (8).jpg', '7 (9).jpg', '7 (10).jpg',
+                '7 (11).jpg', '7 (12).jpg'
+            ];
+            
+            // 已显示的图片索引数组，用于确保图片随机不重复
+            let displayedImages = [];
+            
+            // 重置已显示图片数组
+            function resetDisplayedImages() {
+                displayedImages = [];
+            }
+            
+            // 随机选择不重复图片的函数
+            function getRandomUniqueImage() {
+                // 如果所有图片都已显示，重置已显示数组
+                if (displayedImages.length >= images.length) {
+                    resetDisplayedImages();
+                }
+                
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * images.length);
+                } while (displayedImages.includes(randomIndex));
+                
+                // 将已选中的图片索引添加到已显示数组
+                displayedImages.push(randomIndex);
+                
+                return `image/${images[randomIndex]}`;
+            }
+            
+            // 获取DOM元素
+            const giftBox = document.getElementById('giftBox');
+            const giftBoxContainer = document.getElementById('giftBoxContainer');
+            const memoryImage = document.getElementById('memoryImage');
+            const loveLetter = document.querySelector('.love-letter');
+            const messageLines = document.querySelectorAll('.message-line');
+            
+            // 重置礼盒状态
+            function resetGiftBox() {
+                // 移除所有动画类
+                giftBox.classList.remove('explode', 'open');
+                
+                // 重置信件和文字状态
+                loveLetter.style.opacity = '0';
+                loveLetter.style.transform = 'translateX(-50%) translateY(50px)';
+                
+                // 重置图片状态
+                memoryImage.style.opacity = '0';
+                memoryImage.style.transform = 'scale(0.5) rotate(-20deg)';
+                
+                // 重置文字行状态
+                messageLines.forEach(line => {
+                    line.style.opacity = '0';
+                    line.style.transform = 'translateY(10px)';
+                });
+                
+                // 启用礼盒点击
+                giftBoxContainer.classList.remove('disabled');
+            }
+            
+            // 显示图片函数
+            function showImage() {
+                // 设置随机不重复图片
+                memoryImage.src = getRandomUniqueImage();
+                memoryImage.onload = function() {
+                    // 先短暂放大再恢复正常大小，创造弹出感
+                    this.style.opacity = '1';
+                    this.style.transform = 'scale(1.1) rotate(0deg)';
+                    
+                    // 然后添加一个轻微的旋转摇摆效果
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1) rotate(2deg)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1) rotate(-2deg)';
+                            setTimeout(() => {
+                                this.style.transform = 'scale(1) rotate(0deg)';
+                            }, 100);
+                        }, 100);
+                    }, 300);
+                    
+                    // 添加光晕效果
+                    this.style.boxShadow = '0 0 20px rgba(255, 107, 139, 0.5), 0 5px 15px rgba(0, 0, 0, 0.2)';
+                    setTimeout(() => {
+                        this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                    }, 800);
+                };
+            }
+            
+            // 礼盒点击事件
+            giftBoxContainer.addEventListener('click', () => {
+                // 只有当礼盒未打开且未禁用时才能点击
+                if (!giftBox.classList.contains('explode') && !giftBoxContainer.classList.contains('disabled')) {
+                    // 禁用礼盒点击
+                    giftBoxContainer.classList.add('disabled');
+                    
+                    // 添加炸开动画类
+                    giftBox.classList.add('explode');
+                    
+                    // 创建爆炸粒子效果
+                    createExplosionParticles();
+                    
+                    // 告白文字和图片出现动画
+                    setTimeout(() => {
+                        giftBox.classList.add('open');
+                        
+                        // 显示告白文字
+                        messageLines.forEach((line, index) => {
+                            setTimeout(() => {
+                                line.style.opacity = '1';
+                                line.style.transform = 'translateY(0)';
+                            }, index * 200 + 1000);
+                        });
+                        
+                        // 显示图片
+                        setTimeout(() => {
+                            showImage();
+                        }, 1000);
+                         
+                        // 5秒后关闭礼盒，允许再次点击
+                        setTimeout(() => {
+                            // 先隐藏图片
+                            memoryImage.style.opacity = '0';
+                            memoryImage.style.transform = 'scale(0.5) rotate(-20deg)';
+                            
+                            // 再隐藏信件
+                            setTimeout(() => {
+                                resetGiftBox();
+                            }, 300);
+                        }, 5000); // 5秒显示时间
+                    }, 800);
+                }
+            });
+            
+            // 创建爆炸粒子效果
+            function createExplosionParticles() {
+                const container = document.querySelector('.gift-box-container');
+                const particleCount = 60;
+                const particleColors = [
+                    'var(--primary-color)', 
+                    'var(--primary-light)', 
+                    'var(--secondary-color)', 
+                    'var(--secondary-light)', 
+                    'var(--accent-color)', 
+                    'var(--accent-light)', 
+                    '#FFFFFF'
+                ];
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('explosion-particle');
+                    
+                    // 随机属性
+                    const size = Math.random() * 10 + 5;
+                    const color = particleColors[Math.floor(Math.random() * particleColors.length)];
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 80 + 30;
+                    const duration = Math.random() * 1 + 0.5;
+                    const delay = Math.random() * 0.3;
+                    
+                    // 设置样式
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.backgroundColor = color;
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.transform = 'translate(-50%, -50%)';
+                    particle.style.animation = `explodeParticle ${duration}s ease-out ${delay}s forwards`;
+                    particle.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.8)';
+                    
+                    container.appendChild(particle);
+                    
+                    // 添加粒子动画样式
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes explodeParticle {
+                            0% {
+                                transform: translate(-50%, -50%) scale(0);
+                                opacity: 1;
+                            }
+                            20% {
+                                transform: translate(
+                                    calc(-50% + ${Math.cos(angle) * distance}px), 
+                                    calc(-50% + ${Math.sin(angle) * distance}px)
+                                ) scale(1);
+                                opacity: 1;
+                            }
+                            100% {
+                                transform: translate(
+                                    calc(-50% + ${Math.cos(angle) * distance}px), 
+                                    calc(-50% + ${Math.sin(angle) * distance}px)
+                                ) scale(0);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                    
+                    // 动画结束后移除粒子
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, (duration + delay) * 1000 + 100);
+                }
+            }
+            
+            // 返回按钮事件 - 保留以防导航栏不可用
+            document.getElementById('backButton').addEventListener('click', () => {
+                window.location.href = 'memories.html';
+            });
+            
+            // 游戏页面按钮事件 - 保留以防导航栏不可用
+            document.getElementById('gameButton').addEventListener('click', () => {
+                window.location.href = 'game.html';
+            });
+            
+            // 未来规划页面按钮事件 - 保留以防导航栏不可用
+            document.getElementById('futureButton').addEventListener('click', () => {
+                window.location.href = 'future.html';
+            });
+        });
+    </script>
+</body>
+</html>

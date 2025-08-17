@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Days With You - Warm Moments</title>
+    <style>
+        /* 全局样式变量 */
+        :root {
+            --primary-color: #FF6B8B;
+            --primary-light: #FF85A1;
+            --primary-lighter: #FFB7C5;
+            --secondary-color: #B5D8FE;
+            --accent-color: #FFF7AE;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --dark-gray: #333333;
+        }
+
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Nunito', cursive, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-lighter), var(--primary-color), var(--secondary-color));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        /* 背景渐变动画 */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 爱心容器 */
+        .heart-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        /* 爱心形状 */
+        .heart {
+            width: 150px;
+            height: 150px;
+            background-color: var(--primary-color);
+            position: relative;
+            transform: rotate(45deg);
+            box-shadow: 0 10px 30px rgba(255, 107, 139, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            transition: all 0.4s ease;
+        }
+
+        /* 爱心伪元素 */
+        .heart:before,
+        .heart:after {
+            content: '';
+            width: 150px;
+            height: 150px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            transition: background-color 0.4s ease;
+        }
+
+        .heart:before {
+            top: -75px;
+            left: 0;
+        }
+
+        .heart:after {
+            top: 0;
+            left: -75px;
+        }
+
+        /* 爱心脉动动画 */
+        @keyframes pulse {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.05); }
+            100% { transform: rotate(45deg) scale(1); }
+        }
+
+        /* 鼠标悬停效果 */
+        .heart-container:hover .heart,
+        .heart-container:hover .heart:before,
+        .heart-container:hover .heart:after {
+            background-color: var(--primary-light);
+        }
+
+        .heart-container:hover .heart {
+            transform: rotate(45deg) scale(1.2);
+            box-shadow: 0 15px 40px rgba(255, 133, 161, 0.4);
+        }
+
+        /* 文本样式 */
+        .message {
+            margin-top: 30px;
+            font-size: 24px;
+            color: var(--white);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out forwards 0.5s;
+        }
+
+        /* 文字淡入动画 */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 点击后过渡动画 */
+        .fade-out {
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+
+        /* 飘落的小爱心效果 */
+        .heart-fall {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-lighter);
+            transform: rotate(45deg);
+            opacity: 0;
+            animation: heartFall linear infinite;
+        }
+
+        .heart-fall:before,
+        .heart-fall:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-lighter);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart-fall:before {
+            top: -10px;
+            left: 0;
+        }
+
+        .heart-fall:after {
+            top: 0;
+            left: -10px;
+        }
+
+        /* 爱心飘落动画 */
+        @keyframes heartFall {
+            0% {
+                top: -5%;
+                transform: rotate(45deg) translateX(0);
+                opacity: 0.8;
+            }
+            100% {
+                top: 105%;
+                transform: rotate(45deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .heart {
+                width: 100px;
+                height: 100px;
+            }
+
+            .heart:before,
+            .heart:after {
+                width: 100px;
+                height: 100px;
+            }
+
+            .heart:before {
+                top: -50px;
+            }
+
+            .heart:after {
+                left: -50px;
+            }
+
+            .message {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 爱心容器 -->
+    <div class="heart-container" id="heartContainer">
+            <div class="heart"></div>
+            <p class="message">Click to see my little surprise</p>
+        </div>
+
+    <script>
+        // 创建随机飘落的小爱心
+        function createFallingHearts() {
+            const container = document.body;
+            const heartCount = 15; // 小爱心数量
+
+            for (let i = 0; i < heartCount; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.classList.add('heart-fall');
+                    
+                    // 随机位置、大小和动画时长
+                    const leftPos = Math.random() * 100;
+                    const size = Math.random() * 15 + 10;
+                    const duration = Math.random() * 5 + 5;
+                    const delay = Math.random() * 2;
+                    const opacity = Math.random() * 0.5 + 0.3;
+                    
+                    heart.style.left = `${leftPos}vw`;
+                    heart.style.width = `${size}px`;
+                    heart.style.height = `${size}px`;
+                    heart.style.animationDuration = `${duration}s`;
+                    heart.style.animationDelay = `${delay}s`;
+                    heart.style.opacity = opacity;
+                    
+                    // 随机颜色
+                    const hue = Math.random() * 30 + 340; // 粉色到红色的范围
+                    const lightness = Math.random() * 10 + 75; // 亮度
+                    heart.style.backgroundColor = `hsl(${hue}, 100%, ${lightness}%)`;
+                    heart.style.filter = 'drop-shadow(0 0 2px rgba(255, 107, 139, 0.5))';
+                    
+                    container.appendChild(heart);
+                    
+                    // 动画结束后移除元素
+                    setTimeout(() => {
+                        heart.remove();
+                    }, (duration + delay) * 1000);
+                }, i * 1000);
+            }
+        }
+
+        // 初始化页面
+        window.addEventListener('DOMContentLoaded', () => {
+            createFallingHearts();
+            
+            // 每10秒创建一批新的小爱心
+            setInterval(createFallingHearts, 10000);
+            
+            // 点击爱心事件
+            const heartContainer = document.getElementById('heartContainer');
+            heartContainer.addEventListener('click', () => {
+                // 添加淡出动画
+                heartContainer.classList.add('fade-out');
+                
+                // 动画结束后跳转到第二页
+                setTimeout(() => {
+                    window.location.href = 'memories.html';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
