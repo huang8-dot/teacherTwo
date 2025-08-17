@@ -237,9 +237,12 @@
 </head>
 <body>
     <!-- 背景视频 -->
-    <video autoplay  loop playsinline class="background-video">
+    <video id="bgVideo" autoplay loop playsinline class="background-video">
         <source src="image/331488678.mp4" type="video/mp4">
     </video>
+    
+    <!-- 音量控制按钮 -->
+    <button id="volumeToggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 100; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">🔊</button>
     <!-- 爱心容器 -->
     <div class="heart-container" id="heartContainer">
             <div class="heart"></div>
@@ -305,8 +308,39 @@
                     window.location.href = 'memories.html';
                 }, 1000);
             });
+            
+            // 音量控制功能
+            const bgVideo = document.getElementById('bgVideo');
+            const volumeToggle = document.getElementById('volumeToggle');
+            
+            // 尝试设置音量（可能受浏览器自动播放策略限制）
+            try {
+                bgVideo.volume = 0.5; // 设置为50%音量
+            } catch (e) {
+                console.log('浏览器限制了自动设置音量');
+            }
+            
+            // 点击按钮切换静音状态
+            volumeToggle.addEventListener('click', () => {
+                bgVideo.muted = !bgVideo.muted;
+                
+                // 更新按钮图标
+                volumeToggle.textContent = bgVideo.muted ? '🔇' : '🔊';
+            });
+            
+            // 当用户与页面交互时，尝试启用声音
+            document.addEventListener('click', () => {
+                try {
+                    if (bgVideo.paused) {
+                        bgVideo.play();
+                    }
+                    bgVideo.muted = false;
+                    volumeToggle.textContent = '🔊';
+                } catch (e) {
+                    console.log('需要用户交互才能播放声音');
+                }
+            }, { once: true });
         });
     </script>
 </body>
 </html>
-
