@@ -31,9 +31,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        /* 背景视频样式 */
+        .background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.7);
+        }
+
+        /* 渐变叠加层保持原有风格 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(135deg, var(--primary-lighter), var(--primary-color), var(--secondary-color));
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
+            opacity: 0.4;
+            z-index: -1;
         }
 
         /* 背景渐变动画 */
@@ -211,6 +236,10 @@
     </style>
 </head>
 <body>
+    <!-- 背景视频 -->
+    <video autoplay muted loop playsinline class="background-video">
+        <source src="image/331488678.mp4" type="video/mp4">
+    </video>
     <!-- 爱心容器 -->
     <div class="heart-container" id="heartContainer">
             <div class="heart"></div>
